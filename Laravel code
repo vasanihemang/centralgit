@@ -196,12 +196,15 @@ class AdminController extends Controller
 
 (Route)
 
+Route::post('user/login',[LoginController::class,'login'])->name('user.login');
+Route::get('logout',[LoginController::class,'logout'])->name('logout');    
+
 Route::get('admin/list',[AdminController::class,'index']);
-Route::get('admin/create',[AdminController::class,'create']);
-Route::post('admin/store',[AdminController::class,'store']);
-Route::get('admin/edit',[AdminController::class,'edit']);
-Route::post('admin/update',[AdminController::class,'update']);
-Route::get('admin/destroy',[AdminController::class,'destroy']);
+Route::get('admin/create',[AdminController::class,'create'])->name(admin.create);
+Route::post('admin/store',[AdminController::class,'store'])->name('admin.store');
+Route::get('admin/edit',[AdminController::class,'edit'])->name('admin.edit');
+Route::post('admin/update',[AdminController::class,'update']);->name('admin.update')
+Route::get('admin/destroy',[AdminController::class,'destroy'])->name('admin.destroy');
 
 
 (data delete from Ajax)
@@ -233,5 +236,79 @@ Route::get('admin/destroy',[AdminController::class,'destroy']);
             })
         })
     </script>
+</body>
+</html>
+
+
+(login Controller)
+
+class LoginController extends Controller
+{
+    public function login(Request $request)
+    {
+        // $user = User::where('email',$request->email)->first();
+
+        // if ($user && Hash::check($request->password, $user->password)) {
+        //     Auth::login($user);
+        //     return redirect('user/list');
+        // }else
+        // {
+        //     dd("Credentials not match.");
+        // }
+
+
+->        $credentials = $request->validate([
+            'email' => 'required|email|min:2|max:30',
+            'password' => 'required',
+        ]);
+
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+
+            return redirect('user/list');
+        }
+
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ]);
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        return redirect('/');
+    }
+}
+
+
+(login blade file)
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+</head>
+<body>
+    @foreach ($errors->all() as $massage)
+        <div class="alert alert-danger">{{$massage}}</div>
+    @endforeach
+    <form action="{{route('user.login')}}" method="POST">
+        @csrf
+        <input type="email" name="email" placeholder="Email">
+        @error('email')
+            <div class="alert alert-danger">{{ $message }}</div>
+        @enderror
+        <br><br>
+        <input type="password" name="password" placeholder="Password">
+        @error('password')
+        <div class="alert alert-danger">{{ $message }}</div>
+        @enderror
+        <br><br>
+        <input type="submit">
+    </form>
 </body>
 </html>
