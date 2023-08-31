@@ -202,3 +202,36 @@ Route::post('admin/store',[AdminController::class,'store']);
 Route::get('admin/edit',[AdminController::class,'edit']);
 Route::post('admin/update',[AdminController::class,'update']);
 Route::get('admin/destroy',[AdminController::class,'destroy']);
+
+
+(data delete from Ajax)
+
+                    <a href="{{url('admin/edit?id='.$admin->id)}}" class="btn btn-primary">Edit</a>
+                    <a href="{{url('admin/destroy?id='.$admin->id)}}" class="btn btn-danger">Delete</a>
+    ->                <button class="btn btn-success delete-admin" data-id="{{$admin->id}}">Ajax Delete</button>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+    <script src="{{asset('jquery.min.js')}}"></script>
+    <script>
+        $(document).on('click', '.delete-admin',function(){
+
+            var id = $(this).data('id');
+            var $this = $(this);
+            $.ajax({
+                type: "GET",
+                url: "{{route('admin.destroy')}}",
+                data: {id:id},
+                success: function(res)
+                {
+                    $this.parents('tr').remove();
+
+                    toastr.success(res.message);
+                }
+            })
+        })
+    </script>
+</body>
+</html>
