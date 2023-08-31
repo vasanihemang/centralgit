@@ -187,10 +187,9 @@ class AdminController extends Controller
    
     public function destroy(Request $request)
     {
-        $id = $request->id;
-        $admin = Admin::find($id);
+        $admin = Admin::find($request->id);
         $admin ->delete();
-        return back();
+        return response()->json(['success' => true, 'message' => 'Admin successfully removed']);        
     }
 }
 
@@ -312,3 +311,16 @@ class LoginController extends Controller
     </form>
 </body>
 </html>
+
+
+        public function index()
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return redirect('/');
+        }
+        // $users = DB::table('users')->get();
+        $users = User::all();
+
+        return view('user-list',compact('users'));
+    }
